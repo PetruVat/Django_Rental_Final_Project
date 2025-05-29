@@ -29,11 +29,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
+        # Удаляем вспомогательное поле
         validated_data.pop('password2')
+        # Берём роль из данных, по умолчанию 'tenant'
+        role = validated_data.get('role', 'tenant')
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
-            role=validated_data['role', 'tenant'],
-            password=validated_data['password'],
+            role=role,
+            password=validated_data['password']
         )
         return user

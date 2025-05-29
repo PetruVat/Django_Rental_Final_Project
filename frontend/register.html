@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Rental App — Регистрация</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>Rental App</h1>
+    <nav>
+      <a href="index.html">Главная</a>
+      <a href="login.html">Вход</a>
+    </nav>
+  </header>
+
+  <main class="container form-container">
+    <h2>Регистрация</h2>
+    <form id="registerForm">
+      <label for="regUsername">Username</label>
+      <input type="text" id="regUsername" required>
+
+      <label for="regEmail">Email</label>
+      <input type="email" id="regEmail" required>
+
+      <label for="regPassword">Password</label>
+      <input type="password" id="regPassword" required>
+
+      <label for="regPassword2">Confirm Password</label>
+      <input type="password" id="regPassword2" required>
+
+      <label for="regRole">Role</label>
+      <select id="regRole">
+        <option value="tenant">Tenant(Арендатор)</option>
+        <option value="landlord">Landlord(Арендодатель)</option>
+      </select>
+
+      <button type="submit">Зарегистрироваться</button>
+    </form>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; 2025 Rental App</p>
+  </footer>
+<script type="module" src="./js/main.js"></script>
+<script type="module" src="./js/auth.js"></script>
+
+</body>
+</html>

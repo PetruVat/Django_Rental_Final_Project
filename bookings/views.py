@@ -3,12 +3,13 @@ from rest_framework.exceptions import PermissionDenied
 
 from bookings.models import Booking
 from bookings.serializers import BookingSerializer
+from bookings.permissions import BookingPermission
 
 
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, BookingPermission)
 
     def get_queryset(self):
         user = self.request.user

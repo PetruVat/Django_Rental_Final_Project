@@ -1,12 +1,14 @@
 from rest_framework import viewsets, permissions
+
 from reviews.models import Review
 from reviews.serializers import ReviewSerializer
+from reviews.permissions import IsReviewAuthorOrReadOnly
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, IsReviewAuthorOrReadOnly)
 
     def get_queryset(self):
         # Просматривать можно все отзывы к конкретному объявлению

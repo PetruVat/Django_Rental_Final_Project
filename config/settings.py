@@ -50,11 +50,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-# Сторонние
-#     'rest_framework',
-#     'rest_framework_simplejwt.token_blacklist',
-#     'django_filters',
-#     'drf_yasg',
+    # Сторонние
+    'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
+    'django_filters',
+    # 'drf_yasg',
 
 # собственные приложения
     'accounts',

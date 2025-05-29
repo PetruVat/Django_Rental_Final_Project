@@ -4,12 +4,13 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from listings.models import Listing
 from listings.serializers import ListingSerializer
+from listings.permissions import IsListingOwnerOrReadOnly
 
 
 class ListingViewSet(viewsets.ModelViewSet):
     queryset = Listing.objects.filter(is_active=True)
     serializer_class = ListingSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, IsListingOwnerOrReadOnly)
 
 
     filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
