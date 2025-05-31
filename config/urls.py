@@ -23,6 +23,7 @@ from accounts.views import RegisterView,MyTokenObtainPairView, UserDetailView, L
 from listings.views import ListingViewSet
 from bookings.views import BookingViewSet
 from reviews.views import ReviewViewSet
+from analytics.views import PopularSearchView, PopularListingView
 
 
 router = DefaultRouter()
@@ -40,4 +41,9 @@ urlpatterns = [
     path('api/auth/me/', UserDetailView.as_view(), name='user_detail'),
     # Основные API
     path('api/', include(router.urls)),
+    # Аналитика
+    path('api/analytics/popular-search/', PopularSearchView.as_view(), name='popular_search'),
+    path('api/analytics/popular-listing/', PopularListingView.as_view(), name='popular_listing'),
+
+    # Swag
 ]

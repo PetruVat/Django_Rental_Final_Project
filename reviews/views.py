@@ -1,8 +1,11 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
+from rest_framework.response import Response
+from django.utils import timezone
 
 from reviews.models import Review
 from reviews.serializers import ReviewSerializer
 from reviews.permissions import IsReviewAuthorOrReadOnly
+from bookings.models import Booking
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -18,4 +21,22 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return self.queryset
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        listing = serializer.validated_data.get('listing')
+        user = self.request.user
+        now = timezone.now().date()
+
+        # Проверка: есть ли завершённая подтверждённая бронь для этого пользователя
+        has_confirmed = Booking.objects.filter(
+            listing=listing,
+            tenant=user,
+            status='confirmed',
+            end_date__lte=now
+        ).exists()
+
+        if not has_confirmed:
+            return Response(
+                {"detail": "Вы можете оставить отзыв только после завершённой аренды."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer.save(author=user)

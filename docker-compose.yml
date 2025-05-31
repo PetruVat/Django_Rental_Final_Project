@@ -31,5 +31,16 @@ services:
     depends_on:
       - db
 
+  ngrok:
+    image: wernight/ngrok
+    depends_on:
+      - web
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
+      NGROK_REGION: eu
+    command: http web:8000
+    ports:
+      - "4040:4040"
+
 volumes:
   db_data:
