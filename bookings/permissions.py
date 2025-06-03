@@ -3,28 +3,29 @@ from rest_framework import permissions
 
 class BookingPermission(permissions.BasePermission):
     """
-    Tenant может создавать/отменять свои брони.
-    Landlord может подтверждать/отклонять брони для своих объявлений.
+    Tenant может создавать и отменять свои брони.
+    Landlord может подтверждать или отклонять брони на свои объекты.
     """
+
+    def has_permission(self, request, view):
+        if view.action == 'create':
+            return request.user.role == 'tenant'
+        return True  # Остальные разрешения — в has_object_permission
+
     def has_object_permission(self, request, view, obj):
         user = request.user
-        # чтение - viewset сам фильтрует
+
         if request.method in permissions.SAFE_METHODS:
             return True
 
-
-        # Tenant: создание и отмена (cancel → PATCH status='cancelled')
         if user.role == 'tenant':
-            # при создании объект ещё не существует → has_permission
-            if view.action == 'create':
-                return True
-
-            # отмена: проверяем, что это его бронь
-            if view.action in ['patial_update', 'destroy']:
+            # Может отменить свою бронь
+            if view.action in ['partial_update', 'destroy']:
                 return obj.tenant == user
 
-        # Landlord: может менять статус своих броней
-        if user.role == 'landlord' and view.action == 'partial_update':
-            return obj.listing.owner == user
+        if user.role == 'landlord':
+            # Может подтвердить или отклонить бронь для своего объекта
+            if view.action == 'partial_update':
+                return obj.listing.owner == user
 
         return False

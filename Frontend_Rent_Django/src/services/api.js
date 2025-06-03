@@ -211,17 +211,42 @@ export const apiBase = API_BASE;
 
 // ---------- REVIEWS ----------
 export const createReview = async (listingId, reviewData) => {
-    const response = await api.post(`/reviews/`, { listing: listingId, ...reviewData });
-    if (!response) {
-        throw new Error('Could not create review');
-    }
-    return response;
+  const response = await api.post(`/reviews/`, {
+    listing: listingId,
+    ...reviewData,
+  });
+
+  if (response?.detail) {
+    // Ошибка от сервера — например, аренда не завершена
+    throw new Error(response.detail);
+  }
+
+  return response;
 };
 
 export const getReviews = async (listingId) => {
-    const response = await api.get(`/reviews/?listing=${listingId}`);
-    if (!response) {
-        throw new Error('Could not fetch reviews');
-    }
-    return response;
+  const response = await api.get(`/reviews/?listing=${listingId}`);
+  return response?.results || response;
 };
+
+
+// ---------- ANALYTICS ----------
+export async function getSearchHistory() {
+  const res = await fetch(`${API_BASE}/analytics/search-history/`, {
+    headers: {
+      ...getAuthHeaders(),
+    },
+  });
+  if (!res.ok) throw new Error("Ошибка загрузки истории поиска");
+  return await res.json();
+}
+
+export async function getPopularListings() {
+  const res = await fetch(`${API_BASE}/analytics/popular-listings/`, {
+    headers: {
+      ...getAuthHeaders(),
+    },
+  });
+  if (!res.ok) throw new Error("Ошибка загрузки популярных объявлений");
+  return await res.json();
+}

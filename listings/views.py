@@ -1,4 +1,5 @@
 from rest_framework import viewsets, permissions, mixins, status
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
@@ -9,7 +10,7 @@ from django.utils import timezone
 
 from listings.models import Listing, ListingImage
 from listings.serializers import ListingSerializer, ListingImageSerializer
-from listings.permissions import IsListingOwnerOrReadOnly
+from listings.permissions import IsListingOwnerOrReadOnly, IsListingOwnerForImage
 from analytics.models import SearchHistory, ViewHistory
 
 
@@ -73,19 +74,10 @@ class ListingImageViewSet(mixins.CreateModelMixin,
 
 class UploadListingImageView(APIView):
     parser_classes = [MultiPartParser]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsListingOwnerForImage]
 
-    def post(self, request, *args, **kwargs):
-        image_file = request.FILES.get("image")
-        listing_id = request.data.get("listing")
-
-        if not image_file or not listing_id:
-            return Response({"error": "Image and listing ID required"}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            listing = Listing.objects.get(id=listing_id, owner=request.user)
-        except Listing.DoesNotExist:
-            return Response({"error": "Listing not found or not owned by user"}, status=status.HTTP_404_NOT_FOUND)
-
-        listing_image = ListingImage.objects.create(listing=listing, image=image_file)
-        return Response({"image": listing_image.image.url}, status=status.HTTP_201_CREATED)
+    def perform_create(self, serializer):
+        listing = serializer.validated_data['listing']
+        if listing.owner != self.request.user:
+            raise PermissionDenied("Вы не являетесь владельцем этого объявления.")
+        serializer.save()

@@ -1,6 +1,8 @@
 // src/pages/ListingList.jsx
 
 import ListingCard from "@/components/ListingCard";
+import PopularListings from "@/components/PopularListings";
+import SearchHistory from "@/components/SearchHistory";
 import { useEffect, useState } from "react";
 import { getListings } from "@/services/api";
 import { toast } from "sonner";
@@ -59,6 +61,8 @@ export default function ListingList() {
   return (
     <section className="max-w-7xl mx-auto p-4">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+       <SearchHistory />
+      <PopularListings />
         <h1 className="text-2xl font-bold">Список недвижимости</h1>
         <div className="flex flex-col sm:flex-row gap-2">
           <Input
