@@ -40,16 +40,16 @@ class BookingViewSet(viewsets.ModelViewSet):
         if request.user != booking.listing.owner:
             return Response({"detail": "Недостаточно прав."}, status=status.HTTP_403_FORBIDDEN)
 
-        booking.status = 'declined'
+        booking.status = 'rejected'
         booking.save()
-        return Response({'status': 'declined'}, status=status.HTTP_200_OK)
+        return Response({'status': 'rejected'}, status=status.HTTP_200_OK)
 
 class BookingStatusUpdateView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def patch(self, request, pk):
         status_value = request.data.get("status")
-        if status_value not in ["pending", "accepted", "declined"]:
+        if status_value not in ["pending", "confirmed", "canceled", "rejected"]:
             return Response({"error": "Неверный статус"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
