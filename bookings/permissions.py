@@ -25,7 +25,7 @@ class BookingPermission(permissions.BasePermission):
 
         if user.role == 'landlord':
             # Может подтвердить или отклонить бронь для своего объекта
-            if view.action == 'partial_update':
+            if view.action in ['partial_update', 'confirm', 'decline']:
                 return obj.listing.owner == user
 
         return False
