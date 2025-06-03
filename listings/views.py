@@ -1,10 +1,8 @@
-from rest_framework import viewsets, permissions, mixins, status
+from rest_framework import viewsets, permissions, mixins, status, generics
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
 
@@ -72,12 +70,19 @@ class ListingImageViewSet(mixins.CreateModelMixin,
     permission_classes = [IsAuthenticated]
 
 
-class UploadListingImageView(APIView):
+class UploadListingImageView(generics.CreateAPIView):
+    """Upload a new image for a listing."""
+
+    queryset = ListingImage.objects.all()
+    serializer_class = ListingImageSerializer
     parser_classes = [MultiPartParser]
     permission_classes = [IsAuthenticated, IsListingOwnerForImage]
 
     def perform_create(self, serializer):
-        listing = serializer.validated_data['listing']
+        listing = serializer.validated_data["listing"]
         if listing.owner != self.request.user:
-            raise PermissionDenied("Вы не являетесь владельцем этого объявления.")
+            raise PermissionDenied(
+                "Вы не являетесь владельцем этого объявления."
+            )
         serializer.save()
+
