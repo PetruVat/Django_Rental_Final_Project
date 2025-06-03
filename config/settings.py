@@ -37,7 +37,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1']
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -79,6 +79,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'config.urls'
+
+MEDIA_URL  = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 TEMPLATES = [
     {
@@ -180,8 +183,11 @@ SIMPLE_JWT = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",          # Vite dev-server
+    "http://localhost:5173",  # или твой Vite URL
 ]
-CORS_ALLOW_CREDENTIALS = True        # если используете cookie / JWT refresh
-CORS_ALLOW_ALL_ORIGINS = True           # ← только на время разработки
+
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SECURE = False  # True — только на HTTPS

@@ -23,6 +23,7 @@ class Review(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        unique_together = ("listing", "tenant")
 
     def __str__(self):
         return f'Review {self.id} for {self.listing}'

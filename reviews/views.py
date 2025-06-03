@@ -4,28 +4,28 @@ from django.utils import timezone
 
 from reviews.models import Review
 from reviews.serializers import ReviewSerializer
-from reviews.permissions import IsReviewAuthorOrReadOnly
+from reviews.permissions import IsTenantOrReadOnly
 from bookings.models import Booking
+from listings.models import Listing  # Import Listing model
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = (permissions.IsAuthenticated, IsReviewAuthorOrReadOnly)
+    permission_classes = (permissions.IsAuthenticated, IsTenantOrReadOnly)
 
     def get_queryset(self):
         # Просматривать можно все отзывы к конкретному объявлению
         listing_id = self.request.query_params.get('listing')
         if listing_id:
             return self.queryset.filter(listing_id=listing_id)
-        return self.queryset
+        return self.queryset.none()
 
     def perform_create(self, serializer):
         listing = serializer.validated_data.get('listing')
         user = self.request.user
         now = timezone.now().date()
 
-        # Проверка: есть ли завершённая подтверждённая бронь для этого пользователя
         has_confirmed = Booking.objects.filter(
             listing=listing,
             tenant=user,
@@ -39,4 +39,4 @@ class ReviewViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        serializer.save(author=user)
+        serializer.save(tenant=self.request.user)  # Changed author to tenant

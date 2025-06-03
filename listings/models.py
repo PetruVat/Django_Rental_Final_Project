@@ -32,3 +32,13 @@ class Listing(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class ListingImage(models.Model):                   # ② НОВЫЙ класс
+    listing  = models.ForeignKey(
+        "Listing",
+        on_delete=models.CASCADE,
+    )
+    image    = models.ImageField(upload_to="listing_images/")
+    uploaded = models.DateTimeField(auto_now_add=True)
+

@@ -14,14 +14,16 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
 from accounts.views import RegisterView,MyTokenObtainPairView, UserDetailView, LogoutView
-from listings.views import ListingViewSet
-from bookings.views import BookingViewSet
+from listings.views import ListingViewSet, ListingImageViewSet, UploadListingImageView
+from bookings.views import BookingViewSet, BookingStatusUpdateView
 from reviews.views import ReviewViewSet
 from analytics.views import PopularSearchView, PopularListingView
 
@@ -30,6 +32,10 @@ router = DefaultRouter()
 router.register(r'listings', ListingViewSet, basename='listings')
 router.register(r'bookings', BookingViewSet, basename='bookings')
 router.register(r'reviews', ReviewViewSet, basename='reviews')
+
+
+
+router.register(r"listing-images",  ListingImageViewSet, basename="listingimage")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -46,4 +52,11 @@ urlpatterns = [
     path('api/analytics/popular-listing/', PopularListingView.as_view(), name='popular_listing'),
 
     # Swag
-]
+
+    # image
+    # path('api/listings/<int:pk>/upload_images/', UploadListingImagesView.as_view()),
+    path('api/upload-image/', UploadListingImageView.as_view(), name='upload-image'),
+
+    path("api/bookings/<int:pk>/status/", BookingStatusUpdateView.as_view(), name="booking-status-update"),
+
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

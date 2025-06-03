@@ -7,7 +7,7 @@ from listings.models import Listing
 class BookingSerializer(serializers.ModelSerializer):
     tenant = serializers.ReadOnlyField(source='tenant.username')
     listing = serializers.PrimaryKeyRelatedField(
-        queryset=Booking.objects.all()
+        queryset=Listing.objects.all()
     )
 
     class Meta:
