@@ -15,6 +15,7 @@ import Header from "./components/Header";
 import PrivateRoute from "./components/PrivateRoute";
 import MyListingsPage from "./pages/MyListingsPage";
 import AllBookingsPage from "./pages/AllBookingsPage";
+import NotFound from "./pages/NotFound";
 
 
 function App() {
@@ -93,6 +94,7 @@ function App() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

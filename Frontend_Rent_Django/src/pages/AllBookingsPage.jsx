@@ -46,12 +46,16 @@ export default function AllBookingsPage() {
 
               {b.status === "pending" && (
                 <div className="flex gap-2">
-                  <Button onClick={() => handleUpdate(b.id, "accepted")}>
+                  <Button onClick={() => handleUpdate(b.id, "confirmed")}>
                     Подтвердить
                   </Button>
-                  <Button variant="destructive" className="text-black bg-red-100 hover:bg-red-200">
+                  <Button
+                    variant="destructive"
+                    className="text-black bg-red-100 hover:bg-red-200"
+                    onClick={() => handleUpdate(b.id, "rejected")}
+                  >
                     Отклонить
-                    </Button>
+                  </Button>
                 </div>
               )}
             </div>

@@ -8,3 +8,8 @@ class PopularListingSerializer(serializers.Serializer):
     listing_id = serializers.IntegerField()
     title = serializers.CharField()
     view_count = serializers.IntegerField()
+
+
+class UserSearchHistorySerializer(serializers.Serializer):
+    term = serializers.CharField(source="keyword")
+    count = serializers.IntegerField()

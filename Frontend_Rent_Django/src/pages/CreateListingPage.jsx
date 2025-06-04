@@ -16,12 +16,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-
-const PROPERTY_TYPES = [
-  { value: "house", label: "Дом" },
-  { value: "apartment", label: "Квартира" },
-  { value: "room", label: "Комната" },
-];
+import { PROPERTY_TYPES } from "@/constants/propertyTypes";
 
 export default function CreateListingPage() {
   const navigate = useNavigate();

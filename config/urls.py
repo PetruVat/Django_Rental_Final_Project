@@ -25,7 +25,11 @@ from accounts.views import RegisterView,MyTokenObtainPairView, UserDetailView, L
 from listings.views import ListingViewSet, ListingImageViewSet, UploadListingImageView
 from bookings.views import BookingViewSet, BookingStatusUpdateView
 from reviews.views import ReviewViewSet
-from analytics.views import PopularSearchView, PopularListingView
+from analytics.views import (
+    PopularSearchView,
+    PopularListingView,
+    UserSearchHistoryView,
+)
 
 
 router = DefaultRouter()
@@ -50,6 +54,7 @@ urlpatterns = [
     # Аналитика
     path('api/analytics/popular-search/', PopularSearchView.as_view(), name='popular_search'),
     path('api/analytics/popular-listing/', PopularListingView.as_view(), name='popular_listing'),
+    path('api/analytics/search-history/', UserSearchHistoryView.as_view(), name='user_search_history'),
 
     # Swag
 

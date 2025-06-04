@@ -2,6 +2,7 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.views import APIView
+from django.utils import timezone
 
 from .models import Booking
 from .serializers import BookingSerializer
@@ -59,6 +60,14 @@ class BookingStatusUpdateView(APIView):
 
         if booking.listing.owner != request.user:
             return Response({"error": "Нет доступа"}, status=status.HTTP_403_FORBIDDEN)
+
+        if status_value == "canceled":
+            today = timezone.now().date()
+            if today >= booking.start_date:
+                return Response(
+                    {"error": "Нельзя отменить бронирование после даты начала"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         booking.status = status_value
         booking.save()

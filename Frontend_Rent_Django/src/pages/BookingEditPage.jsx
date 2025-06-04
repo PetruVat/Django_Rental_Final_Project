@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { getBookings } from "../services/api";
+import { getBookings, api } from "../services/api";
 import { Spinner } from "../components/ui/spinner";
 import { useAuth } from "../context/AuthContext";
 
@@ -45,17 +45,10 @@ export default function BookingEditPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await fetch(`/api/bookings/${id}/`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          start_date: startDate,
-          end_date: endDate,
-          guests,
-        }),
+      await api.patch(`/bookings/${id}/`, {
+        start_date: startDate,
+        end_date: endDate,
+        guests,
       });
       navigate("/bookings");
     } catch (err) {
@@ -66,12 +59,7 @@ export default function BookingEditPage() {
   const handleDelete = async () => {
     if (!confirm("Удалить бронирование?")) return;
     try {
-      await fetch(`/api/bookings/${id}/`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      await api.delete(`/bookings/${id}/`);
       navigate("/bookings");
     } catch (err) {
       alert("Ошибка при удалении");
@@ -80,14 +68,7 @@ export default function BookingEditPage() {
 
   const handleConfirm = async () => {
     try {
-      await fetch(`/api/bookings/${id}/`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ status: "confirmed" }),
-      });
+      await api.patch(`/bookings/${id}/`, { status: "confirmed" });
       alert("Бронирование подтверждено");
       navigate("/bookings");
     } catch (err) {
@@ -97,14 +78,7 @@ export default function BookingEditPage() {
 
   const handleReject = async () => {
     try {
-      await fetch(`/api/bookings/${id}/`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ status: "rejected" }),
-      });
+      await api.patch(`/bookings/${id}/`, { status: "rejected" });
       alert("Бронирование отклонено");
       navigate("/bookings");
     } catch (err) {

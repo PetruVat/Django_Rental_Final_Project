@@ -22,3 +22,30 @@ class BookingSerializer(serializers.ModelSerializer):
             'created_at'
         )
         read_only_fields = ('status', 'created_at')
+
+    def validate(self, attrs):
+        listing = attrs.get('listing')
+        start_date = attrs.get('start_date')
+        end_date = attrs.get('end_date')
+
+        if start_date and end_date and start_date > end_date:
+            raise serializers.ValidationError(
+                {'end_date': 'Дата окончания не может быть раньше даты начала.'}
+            )
+
+        if listing and start_date and end_date:
+            qs = Booking.objects.filter(
+                listing=listing,
+            ).exclude(status__in=['canceled', 'rejected'])
+
+            if self.instance:
+                qs = qs.exclude(pk=self.instance.pk)
+
+            qs = qs.filter(start_date__lte=end_date, end_date__gte=start_date)
+
+            if qs.exists():
+                raise serializers.ValidationError(
+                    'Выбранные даты уже заняты для этого объявления.'
+                )
+
+        return attrs

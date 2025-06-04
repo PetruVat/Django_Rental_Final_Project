@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { api } from "@/services/api";
+import { getSearchHistory } from "@/services/api";
 
 export default function SearchHistory() {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
-    api.get("/analytics/search-history/").then((data) => {
+    getSearchHistory().then((data) => {
       if (Array.isArray(data)) setHistory(data);
     });
   }, []);

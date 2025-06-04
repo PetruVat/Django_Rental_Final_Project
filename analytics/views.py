@@ -1,9 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
-from django.db.models import Count
+from django.db.models import Count, Max
 from analytics.models import SearchHistory, ViewHistory
-from analytics.serializers import PopularSearchSerializer, PopularListingSerializer
+from analytics.serializers import (
+    PopularSearchSerializer,
+    PopularListingSerializer,
+    UserSearchHistorySerializer,
+)
 from listings.models import Listing
 
 class PopularSearchView(APIView):
@@ -44,4 +48,19 @@ class PopularListingView(APIView):
                 continue
 
         serializer = PopularListingSerializer(results, many=True)
+        return Response(serializer.data)
+
+
+class UserSearchHistoryView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        """Возвращает последние поисковые запросы текущего пользователя."""
+        qs = (
+            SearchHistory.objects.filter(user=request.user)
+            .values("keyword")
+            .annotate(count=Count("id"), last_time=Max("timestamp"))
+            .order_by("-last_time")[:10]
+        )
+        serializer = UserSearchHistorySerializer(qs, many=True)
         return Response(serializer.data)

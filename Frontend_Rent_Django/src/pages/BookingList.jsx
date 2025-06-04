@@ -72,7 +72,7 @@ export default function BookingList() {
                   </Button>
                   <Button
                     variant="destructive"
-                    onClick={() => handleStatusUpdate(booking.id, "declined")}
+                    onClick={() => handleStatusUpdate(booking.id, "rejected")}
                   >
                     Отклонить
                   </Button>
