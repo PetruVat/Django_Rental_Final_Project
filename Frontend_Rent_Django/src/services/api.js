@@ -159,3 +159,4 @@ export async function getSearchHistory() {
 
 export async function getPopularListings() {
   return await request("GET", "/analytics/popular-listings/");
+  }
