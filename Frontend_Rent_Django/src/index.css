@@ -23,7 +23,7 @@
 /* Пример: базовая типографика и фон всего сайта */
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply bg-gray-50 text-gray-900 antialiased font-sans;
   }
   :root {
     --background: 0 0% 100%;

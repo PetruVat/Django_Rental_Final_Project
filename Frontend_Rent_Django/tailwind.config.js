@@ -11,7 +11,10 @@ export default {
   ],
   theme: {
   	extend: {
-  		colors: {
+                fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                },
+                colors: {
   			brand: {
   				DEFAULT: '#00707A'
   			},

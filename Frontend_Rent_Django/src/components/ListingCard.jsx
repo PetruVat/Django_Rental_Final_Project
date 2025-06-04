@@ -13,35 +13,30 @@ export default function ListingCard({ listing }) {
     : null;
 
   return (
-    <div className="border rounded-xl shadow hover:shadow-md transition overflow-hidden bg-white">
-      {firstImage && (
-        <img
-          src={firstImage}
-          alt={listing.title}
-          className="w-full h-60 object-cover"
-        />
-      )}
+    <div className="rounded-2xl overflow-hidden border bg-white shadow-sm hover:shadow-lg transition">
+      <Link to={`/listings/${listing.id}`} className="block relative">
+        {firstImage && (
+          <img
+            src={firstImage}
+            alt={listing.title}
+            className="w-full aspect-square object-cover"
+          />
+        )}
+        {avgRating && (
+          <span className="absolute top-2 right-2 bg-white/80 backdrop-blur-sm px-2 py-1 rounded-full text-sm font-medium">
+            ⭐ {avgRating}
+          </span>
+        )}
+      </Link>
       <div className="p-4 space-y-1">
-        <div className="flex justify-between items-center">
-          <h2 className="text-lg font-semibold">{listing.title}</h2>
-          {avgRating && (
-            <span className="text-sm text-yellow-600 font-medium">
-              ⭐ {avgRating}
-            </span>
-          )}
-        </div>
+        <h2 className="text-base font-semibold truncate">{listing.title}</h2>
         <p className="text-sm text-gray-600">
           {listing.city}, {listing.district}
         </p>
-        <p className="text-base font-bold text-green-700">
+        <p className="text-sm font-medium text-green-700">
           € {listing.price} / ночь
         </p>
-        <Link
-          to={`/listings/${listing.id}`}
-          className="text-blue-600 text-sm inline-block mt-2 hover:underline"
-        >
-          Подробнее
-        </Link>
+
       </div>
     </div>
   );
