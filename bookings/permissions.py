@@ -8,12 +8,17 @@ class BookingPermission(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
+        if not request.user.is_authenticated:
+            return False
         if view.action == 'create':
             return request.user.role == 'tenant'
         return True  # Остальные разрешения — в has_object_permission
 
     def has_object_permission(self, request, view, obj):
         user = request.user
+
+        if not user.is_authenticated:
+            return False
 
         if request.method in permissions.SAFE_METHODS:
             return True

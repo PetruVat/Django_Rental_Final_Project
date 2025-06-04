@@ -38,3 +38,8 @@ class ListingViewTests(APITestCase):
         url = reverse('listings-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+    def test_listings_list_unauthenticated(self):
+        url = reverse('listings-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 401)

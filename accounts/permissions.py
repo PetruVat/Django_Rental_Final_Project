@@ -11,5 +11,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         # всем разрешён SAFE_METHODS (GET, HEAD, OPTIONS)
         if request.method in permissions.SAFE_METHODS:
             return True
+        if not request.user.is_authenticated:
+            return False
         # иначе, только владелец
         return obj.user == request.user

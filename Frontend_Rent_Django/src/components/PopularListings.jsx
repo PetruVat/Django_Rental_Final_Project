@@ -6,7 +6,7 @@ export default function PopularListings() {
   const [popular, setPopular] = useState([]);
 
   useEffect(() => {
-    api.get("/analytics/popular/").then((data) => {
+    api.get("/analytics/popular-listing/").then((data) => {
       if (Array.isArray(data)) setPopular(data);
     });
   }, []);

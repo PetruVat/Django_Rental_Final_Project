@@ -45,3 +45,8 @@ class BookingViewTests(APITestCase):
         url = reverse('bookings-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+    def test_bookings_list_unauthenticated(self):
+        url = reverse('bookings-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 401)

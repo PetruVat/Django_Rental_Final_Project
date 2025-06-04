@@ -10,16 +10,19 @@ class IsListingOwnerOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
-        return request.user.is_authenticated and request.user.role == "landlord"
+        if not request.user.is_authenticated:
+            return False
+        return request.user.role == "landlord"
 
 
-    """
-    Только владелец объявления может изменить/удалить.
-    """
+
     def has_object_permission(self, request, view, obj):
+        """Только владелец объявления может изменить/удалить."""
         # чтение — всем аутентифицированным
         if request.method in permissions.SAFE_METHODS:
             return True
+        if not request.user.is_authenticated:
+            return False
         # запись - только владелец
         return obj.owner == request.user
 
@@ -30,6 +33,8 @@ class IsListingOwnerForImage(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
+        if not request.user.is_authenticated:
+            return False
         if isinstance(obj, ListingImage):
             return obj.listing.owner == request.user
         return False
