@@ -20,7 +20,7 @@ export default function ReviewForm({ listingId, onReviewSubmitted }) {
       setComment("");
       onReviewSubmitted?.();
     } catch (err) {
-      console.error(err);
+      console.error(err?.message || err?.response?.data || err);
       setError(err.message || "Ошибка при отправке отзыва");
       toast.error("Вы не можете оставить отзыв, если не завершили аренду.");
     }

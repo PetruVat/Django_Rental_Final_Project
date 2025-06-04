@@ -5,6 +5,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { getBookings, api } from "../services/api";
 import { Spinner } from "../components/ui/spinner";
 import { useAuth } from "../context/AuthContext";
+import { logError } from "../lib/utils";
 
 export default function BookingEditPage() {
   const { id } = useParams();
@@ -34,7 +35,8 @@ export default function BookingEditPage() {
         setEndDate(item.end_date);
         setGuests(item.guests);
       } catch (err) {
-        setError(err.message);
+          logError("Fetch booking error", err);
+          setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -52,6 +54,7 @@ export default function BookingEditPage() {
       });
       navigate("/bookings");
     } catch (err) {
+        logError("Update booking error", err);
       alert("Ошибка при обновлении");
     }
   };
@@ -62,6 +65,7 @@ export default function BookingEditPage() {
       await api.delete(`/bookings/${id}/`);
       navigate("/bookings");
     } catch (err) {
+        logError("Delete booking error", err);
       alert("Ошибка при удалении");
     }
   };
@@ -72,6 +76,7 @@ export default function BookingEditPage() {
       alert("Бронирование подтверждено");
       navigate("/bookings");
     } catch (err) {
+        logError("Confirm booking error", err);
       alert("Ошибка при подтверждении бронирования");
     }
   };
@@ -82,6 +87,7 @@ export default function BookingEditPage() {
       alert("Бронирование отклонено");
       navigate("/bookings");
     } catch (err) {
+        logError("Reject booking error", err);
       alert("Ошибка при отклонении бронирования");
     }
   };

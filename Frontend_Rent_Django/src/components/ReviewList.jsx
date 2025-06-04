@@ -14,7 +14,7 @@ export default function ReviewList({ listingId }) {
         setReviews(data);
       })
       .catch(error => {
-        console.error("Ошибка при получении отзывов:", error);
+        console.error("Ошибка при получении отзывов:", error?.message || error?.response?.data || error);
       });
   }, [listingId]);
 

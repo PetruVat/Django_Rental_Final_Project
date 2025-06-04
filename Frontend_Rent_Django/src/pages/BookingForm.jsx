@@ -4,6 +4,7 @@ import { createBooking } from "../services/api";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { toast } from "../components/ui/toast";
+import { logError } from "../lib/utils";
 
 export default function BookingForm() {
   const { id } = useParams(); // ID жилья
@@ -19,6 +20,7 @@ export default function BookingForm() {
       await createBooking({ listing: id, start_date: startDate, end_date: endDate, guests });
       toast.success("Бронирование отправлено на подтверждение.");
     } catch (err) {
+        logError("Create booking error", err);
       toast.error("Ошибка при бронировании.");
     } finally {
       setLoading(false);

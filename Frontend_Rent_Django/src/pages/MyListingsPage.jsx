@@ -18,7 +18,10 @@ export default function MyListingsPage() {
         const mine = all.results?.filter((listing) => listing.owner === user.id);
         setListings(mine);
       } catch (err) {
-        console.error("Ошибка загрузки объявлений", err);
+        console.error(
+          "Ошибка загрузки объявлений",
+          err?.message || err?.response?.data || err
+        );
       } finally {
         setLoading(false);
       }

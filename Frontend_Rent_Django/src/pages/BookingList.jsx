@@ -6,6 +6,7 @@ import { Spinner } from "../components/ui/spinner";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "../components/ui/button";
 import { toast } from "sonner";
+import { logError } from "../lib/utils";
 
 export default function BookingList() {
   const [bookings, setBookings] = useState([]);
@@ -19,6 +20,7 @@ export default function BookingList() {
         const data = await getBookings();
         setBookings(data.results ?? []);
       } catch (err) {
+          logError("Fetch bookings error", err);
         setError("Не удалось загрузить бронирования");
       } finally {
         setLoading(false);
@@ -34,7 +36,8 @@ export default function BookingList() {
         prev.map((b) => (b.id === id ? { ...b, status } : b))
       );
       toast.success(`Бронирование ${status === "confirmed" ? "подтверждено" : "отклонено"}`);
-    } catch {
+    } catch (err) {
+      logError("Update booking status error", err);
       toast.error("Не удалось обновить статус");
     }
   };

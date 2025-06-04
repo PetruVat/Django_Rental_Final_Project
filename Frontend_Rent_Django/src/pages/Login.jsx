@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { toast } from "sonner";
+import { logError } from "../lib/utils";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -19,6 +20,7 @@ export default function Login() {
       toast.success("Успешный вход!");
       navigate("/");
     } catch (error) {
+        logError("Login error", error);
       toast.error("Ошибка входа. Проверьте логин и пароль.");
     }
   };

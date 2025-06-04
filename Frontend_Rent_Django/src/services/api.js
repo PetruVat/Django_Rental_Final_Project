@@ -7,44 +7,62 @@ function getAuthHeaders() {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-export async function refreshToken() {
-  const refresh = localStorage.getItem("refresh");
-  const res = await fetch(`${API_BASE}/auth/token/refresh/`, {
-    method: "POST",
+async function request(method, url, data) {
+  const options = {
+    method,
     headers: {
       "Content-Type": "application/json",
+      ...getAuthHeaders(),
     },
-    body: JSON.stringify({ refresh }),
-  });
-  if (!res.ok) throw new Error("Ошибка обновления токена");
-  const data = await res.json();
-  localStorage.setItem("token", data.access);
-  return data.access;
+  };
+
+  if (data !== undefined) {
+    options.body = JSON.stringify(data);
+  }
+
+  const res = await fetch(`${API_BASE}${url}`, options);
+
+  let body = null;
+  try {
+    body = await res.json();
+  } catch (e) {
+    body = null;
+  }
+
+  if (!res.ok) {
+    const message =
+      body?.detail || body?.message || body?.error || res.statusText;
+    const error = new Error(message);
+    error.status = res.status;
+    error.body = body;
+    throw error;
+  }
+
+  return body;
+}
+
+export async function refreshToken() {
+  const refresh = localStorage.getItem("refresh");
+  const data = await request("POST", "/auth/token/refresh/", { refresh });
+  if (data?.access) {
+    localStorage.setItem("token", data.access);
+  }
+  return data?.access;
 }
 
 // ---------- AUTH ----------
 export async function login({ username, password }) {
-  const res = await fetch(`${API_BASE}/auth/login/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ username, password }),
-  });
-  if (!res.ok) throw new Error("Ошибка логина");
-  return await res.json();
+  return await request("POST", "/auth/login/", { username, password });
 }
 
 export async function register({ username, email, password, password2, role }) {
-  const res = await fetch(`${API_BASE}/auth/register/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ username, email, password, password2, role }),
+  return await request("POST", "/auth/register/", {
+    username,
+    email,
+    password,
+    password2,
+    role,
   });
-  if (!res.ok) throw new Error("Ошибка регистрации");
-  return await res.json();
 }
 
 export async function logout() {
@@ -53,157 +71,61 @@ export async function logout() {
 }
 
 export async function getMe() {
-  let res = await fetch(`${API_BASE}/auth/me/`, {
-    headers: {
-      ...getAuthHeaders(),
-    },
-  });
-
-  if (res.status === 401) {
-    const newAccess = await refreshToken();
-    res = await fetch(`${API_BASE}/auth/me/`, {
-      headers: {
-        Authorization: `Bearer ${newAccess}`,
-      },
-    });
+  try {
+    return await request("GET", "/auth/me/");
+  } catch (err) {
+    if (err.status === 401) {
+      await refreshToken();
+      return await request("GET", "/auth/me/");
+    }
+    throw err;
   }
-
-  if (!res.ok) throw new Error("Не авторизован");
-  return await res.json();
 }
 
 // ---------- LISTINGS ----------
 export async function getListings({ sort = "date", page = 1 } = {}) {
-  const res = await fetch(`${API_BASE}/listings/?sort=${sort}&page=${page}`, {
-    headers: {
-      ...getAuthHeaders(),
-    },
-  });
-  if (!res.ok) throw new Error("Ошибка загрузки списка");
-  return await res.json();
+  return await request(
+    "GET",
+    `/listings/?sort=${sort}&page=${page}`
+  );
 }
 
 export async function getListingDetail(id) {
-  const res = await fetch(`${API_BASE}/listings/${id}/`, {
-    headers: {
-      ...getAuthHeaders(),
-    },
-  });
-  if (!res.ok) throw new Error("Ошибка загрузки объекта");
-  return await res.json();
+  return await request("GET", `/listings/${id}/`);
 }
 
 export async function createListing(data) {
-  const res = await fetch(`${API_BASE}/listings/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...getAuthHeaders(),
-    },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Ошибка создания");
-  return await res.json();
+  return await request("POST", "/listings/", data);
 }
 
 export async function updateListing(id, data) {
-  const res = await fetch(`${API_BASE}/listings/${id}/`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      ...getAuthHeaders(),
-    },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Ошибка обновления");
-  return await res.json();
+  return await request("PUT", `/listings/${id}/`, data);
 }
 
 // ---------- BOOKINGS ----------
 export async function getBookings() {
-  const res = await fetch(`${API_BASE}/bookings/`, {
-    headers: {
-      ...getAuthHeaders(),
-    },
-  });
-  if (!res.ok) throw new Error("Ошибка загрузки бронирований");
-  return await res.json();
+  return await request("GET", "/bookings/");
 }
 
 export async function createBooking(data) {
-  const res = await fetch(`${API_BASE}/bookings/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...getAuthHeaders(),
-    },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Ошибка создания бронирования");
-  return await res.json();
+  return await request("POST", "/bookings/", data);
 }
 
 export async function updateBookingStatus(id, status) {
-  const res = await fetch(`${API_BASE}/bookings/${id}/status/`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      ...getAuthHeaders(),
-    },
-    body: JSON.stringify({ status }),
-  });
-  if (!res.ok) throw new Error("Ошибка обновления статуса");
-  return await res.json();
+  return await request("PATCH", `/bookings/${id}/status/`, { status });
 }
 
 // ---------- DEFAULT API WRAPPER ----------
 export const api = {
-  get: (url) =>
-    fetch(`${API_BASE}${url}`, {
-      headers: {
-        "Content-Type": "application/json",
-        ...getAuthHeaders(),
-      },
-    }).then((res) => res.json()),
+  get: (url) => request("GET", url),
 
-  post: (url, data) =>
-    fetch(`${API_BASE}${url}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...getAuthHeaders(),
-      },
-      body: JSON.stringify(data),
-    }).then((res) => res.json()),
+  post: (url, data) => request("POST", url, data),
 
-  put: (url, data) =>
-    fetch(`${API_BASE}${url}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        ...getAuthHeaders(),
-      },
-      body: JSON.stringify(data),
-    }).then((res) => res.json()),
+  put: (url, data) => request("PUT", url, data),
 
-  patch: (url, data) =>
-    fetch(`${API_BASE}${url}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        ...getAuthHeaders(),
-      },
-      body: JSON.stringify(data),
-    }).then((res) => res.json()),
+  patch: (url, data) => request("PATCH", url, data),
 
-  delete: (url) =>
-    fetch(`${API_BASE}${url}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        ...getAuthHeaders(),
-      },
-    }).then((res) => res.json()),
+  delete: (url) => request("DELETE", url),
 };
 
 export const apiBase = API_BASE;
@@ -232,21 +154,8 @@ export const getReviews = async (listingId) => {
 
 // ---------- ANALYTICS ----------
 export async function getSearchHistory() {
-  const res = await fetch(`${API_BASE}/analytics/search-history/`, {
-    headers: {
-      ...getAuthHeaders(),
-    },
-  });
-  if (!res.ok) throw new Error("Ошибка загрузки истории поиска");
-  return await res.json();
+  return await request("GET", "/analytics/search-history/");
 }
 
 export async function getPopularListings() {
-  const res = await fetch(`${API_BASE}/analytics/popular-listings/`, {
-    headers: {
-      ...getAuthHeaders(),
-    },
-  });
-  if (!res.ok) throw new Error("Ошибка загрузки популярных объявлений");
-  return await res.json();
-}
+  return await request("GET", "/analytics/popular-listings/");

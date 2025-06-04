@@ -44,7 +44,7 @@ export default function CreateListingPage() {
     setListingId(listing.id);
     toast.success("Объявление создано. Теперь можно загрузить фото.");
   } catch (err) {
-    console.error(err);
+    console.error(err?.message || err?.response?.data || err);
     toast.error("Ошибка при создании объявления");
   } finally {
     setLoading(false);

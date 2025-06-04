@@ -4,6 +4,7 @@ import { register } from "../services/api";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { toast } from "../components/ui/toast";
+import { logError } from "../lib/utils";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -26,6 +27,7 @@ export default function Register() {
       toast.success("Подтвердите email для завершения регистрации.");
       navigate("/login");
     } catch (err) {
+        logError("Register error", err);
       toast.error("Ошибка при регистрации.");
     } finally {
       setLoading(false);
