@@ -1,6 +1,6 @@
 # listings\permissions.py
 from rest_framework import permissions
-from listings.models import ListingImage
+from listings.models import ListingImage, Listing
 
 
 class IsListingOwnerOrReadOnly(permissions.BasePermission):
@@ -38,3 +38,13 @@ class IsListingOwnerForImage(permissions.BasePermission):
         if isinstance(obj, ListingImage):
             return obj.listing.owner == request.user
         return False
+
+    def has_permission(self, request, view):
+        listing_id = request.data.get('listing')
+        if not (request.user and request.user.is_authenticated and listing_id):
+            return False
+        try:
+            listing = Listing.objects.get(pk=listing_id)
+        except Listing.DoesNotExist:
+            return False
+        return listing.owner == request.user

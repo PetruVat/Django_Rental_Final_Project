@@ -76,7 +76,7 @@ class UploadListingImageView(generics.CreateAPIView):
     queryset = ListingImage.objects.all()
     serializer_class = ListingImageSerializer
     parser_classes = [MultiPartParser]
-    permission_classes = [IsAuthenticated, IsListingOwnerForImage]
+    permission_classes = [IsListingOwnerForImage]
 
     def perform_create(self, serializer):
         listing = serializer.validated_data["listing"]
