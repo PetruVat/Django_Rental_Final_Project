@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.utils import timezone
 
 from bookings.models import Booking
 from listings.models import Listing
@@ -27,6 +28,17 @@ class BookingSerializer(serializers.ModelSerializer):
         listing = attrs.get('listing')
         start_date = attrs.get('start_date')
         end_date = attrs.get('end_date')
+
+        if start_date and start_date < timezone.now().date():
+            raise serializers.ValidationError(
+                {'start_date': 'Дата начала не может быть в прошлом.'}
+            )
+
+        request = self.context.get('request')
+        if listing and request and listing.owner == request.user:
+            raise serializers.ValidationError(
+                'Нельзя бронировать собственное объявление.'
+            )
 
         if start_date and end_date and start_date > end_date:
             raise serializers.ValidationError(
