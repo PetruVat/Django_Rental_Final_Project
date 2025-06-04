@@ -67,7 +67,14 @@ class ListingImageViewSet(mixins.CreateModelMixin,
     """
     queryset = ListingImage.objects.all()
     serializer_class = ListingImageSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsListingOwnerForImage]
+
+    def perform_destroy(self, instance):
+        if instance.listing.owner != self.request.user:
+            raise PermissionDenied(
+                "Вы не являетесь владельцем этого объявления."
+            )
+        instance.delete()
 
 
 class UploadListingImageView(generics.CreateAPIView):
