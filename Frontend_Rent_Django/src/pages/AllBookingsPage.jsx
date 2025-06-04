@@ -10,7 +10,6 @@ export default function AllBookingsPage() {
     try {
       const data = await getBookings();
       setBookings(data.results || []);
-      console.log("bookings response", data);
     } catch {
       toast.error("Не удалось загрузить бронирования");
     }

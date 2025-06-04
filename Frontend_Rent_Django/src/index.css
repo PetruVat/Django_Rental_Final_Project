@@ -213,12 +213,3 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
