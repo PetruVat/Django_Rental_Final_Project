@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import ReviewList from "@/components/ReviewList";
 import ReviewForm from "@/components/ReviewForm";
+import StarRating from "@/components/StarRating";
 
 export default function ListingDetail() {
   const { id } = useParams();
@@ -31,12 +32,7 @@ export default function ListingDetail() {
 
   if (!listing) return null;
 
-  const avgRating = listing.reviews?.length
-    ? (
-        listing.reviews.reduce((acc, r) => acc + r.rating, 0) /
-        listing.reviews.length
-      ).toFixed(1)
-    : "—";
+  const avgRating = listing.average_rating ?? "—";
 
   return (
     <section className="max-w-5xl mx-auto p-4">
@@ -68,7 +64,11 @@ export default function ListingDetail() {
           <div className="space-y-1 text-sm text-gray-800 mb-6">
             <p><strong>Тип:</strong> {listing.property_type}</p>
             <p><strong>Комнат:</strong> {listing.rooms}</p>
-            <p><strong>Средняя оценка:</strong> {avgRating} ⭐</p>
+            <p className="flex items-center gap-1">
+              <strong>Средняя оценка:</strong>
+              <StarRating value={avgRating} />
+              {avgRating}
+            </p>
           </div>
 
           {user?.role === "tenant" && (

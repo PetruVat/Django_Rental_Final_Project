@@ -13,7 +13,7 @@ from analytics.models import SearchHistory, ViewHistory
 
 
 class ListingViewSet(viewsets.ModelViewSet):
-    queryset = Listing.objects.all()
+    queryset = Listing.objects.all().prefetch_related("reviews")
     serializer_class = ListingSerializer
     permission_classes = (permissions.IsAuthenticated, IsListingOwnerOrReadOnly)
 
