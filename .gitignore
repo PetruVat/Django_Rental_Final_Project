@@ -188,4 +188,4 @@ cython_debug/
 .cursorindexingignore
 git_notice.ipynb
 /media
-!Frontend_Rent_Django/src/lib/
+/Frontend_Rent_Django/src/lib/

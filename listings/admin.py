@@ -13,4 +13,6 @@ class ListingAdmin(admin.ModelAdmin):
     inlines = [ListingImageInline]
 
 
-admin.site.register(ListingImage)
+@admin.register(ListingImage)
+class ListingImageAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "uploaded")

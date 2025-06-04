@@ -50,3 +50,26 @@ docker-compose up
 - `PATCH /api/bookings/<id>/status/` – update a booking status.
 - `GET /api/analytics/popular-search/` – most popular search terms.
 - `GET /api/analytics/popular-listing/` – most viewed listings.
+- `GET /api/reviews/?listing=<id>` – list reviews for a listing (auth required).
+- `POST /api/reviews/` – create a review (authenticated tenant only).
+- `POST /api/upload-image/` – upload an image for a listing (owner auth required).
+
+## Example Requests
+
+```bash
+# Fetch reviews for listing 1
+curl -H "Authorization: Bearer <token>" \
+     http://localhost:8000/api/reviews/?listing=1
+
+# Leave a review for listing 1
+curl -X POST http://localhost:8000/api/reviews/ \
+     -H "Authorization: Bearer <token>" \
+     -H "Content-Type: application/json" \
+     -d '{"listing": 1, "rating": 5, "comment": "Great stay!"}'
+
+# Upload an image to listing 1
+curl -X POST http://localhost:8000/api/upload-image/ \
+     -H "Authorization: Bearer <token>" \
+     -F "listing=1" \
+     -F "image=@/path/to/file.jpg"
+```

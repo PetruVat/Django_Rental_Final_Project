@@ -42,3 +42,11 @@ class ListingImage(models.Model):                   # ② НОВЫЙ класс
     image    = models.ImageField(upload_to="listing_images/")
     uploaded = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        """Combine listing title and image filename for admin readability."""
+        title = getattr(self.listing, "title", "")
+        file_name = self.image.name if self.image else ""
+        if title and file_name:
+            return f"{title} - {file_name}"
+        return title or file_name
+
